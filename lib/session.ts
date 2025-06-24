@@ -1,7 +1,7 @@
-import { IronSessionOptions, getIronSession, setIronSession } from "iron-session";
+import { SessionOptions, getIronSession } from "iron-session";
 import { NextResponse } from "next/server";
 
-const sessionOptions: IronSessionOptions = {
+const sessionOptions: SessionOptions = {
   password: process.env.SESSION_PASSWORD || "complex_password_at_least_32_characters_long",
   cookieName: "sessao_pos",
   cookieOptions: {
@@ -14,10 +14,11 @@ const sessionOptions: IronSessionOptions = {
 export async function setLoginSession(res: NextResponse, sessionData: any) {
   // iron-session não suporta NextResponse diretamente, então usamos workaround
   // https://github.com/vvo/iron-session/issues/671
+  const cookieOptions = sessionOptions.cookieOptions || {};
   res.cookies.set(sessionOptions.cookieName, JSON.stringify(sessionData), {
-    httpOnly: sessionOptions.cookieOptions.httpOnly,
-    secure: sessionOptions.cookieOptions.secure,
-    sameSite: sessionOptions.cookieOptions.sameSite,
+    httpOnly: cookieOptions.httpOnly,
+    secure: cookieOptions.secure,
+    sameSite: cookieOptions.sameSite,
     path: "/",
     maxAge: 60 * 60 * 24, // 1 dia
   });
